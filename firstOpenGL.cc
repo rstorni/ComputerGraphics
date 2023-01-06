@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
@@ -8,8 +8,8 @@ void init(GLFWwindow* window){};
 
 void display(GLFWwindow* window, double currentTime)
 {
-	glClearColor(1.0, 0, 0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	
+
 }
 
 int main(void)
@@ -17,13 +17,24 @@ int main(void)
 	if(!glfwInit()){exit(EXIT_FAILURE);}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-	//creating instance of a window
-	GLFWwindow* window = glfwCreateWindow(600, 600, "First Window", NULL, NULL);
-	glfwMakeContextCurrent(window);
-	
-	if(glewInit() != GLEW_OK){exit(EXIT_FAILURE);}
+
+	GLFWwindow* window = glfwCreateWindow(800, 600, "Lab3", NULL, NULL);
+	if (window == NULL)
+	{
+    	cout << "Failed to create GLFW window" << endl;
+    	glfwTerminate();
+    	return -1;
+	}
+
+	glfwMakeContextCurrent( window );
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+    	std::cout << "Failed to initialize GLAD" << std::endl;
+    	return -1;
+	}
 
 	glfwSwapInterval(1);
 	
@@ -32,12 +43,12 @@ int main(void)
 	//animation loop
 	while(!glfwWindowShouldClose(window))
 	{
-		display(window, glfwGetTime());
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+	//	display(window, glfwGetTime());
+	//	glfwSwapBuffers(window);
+	//	glfwPollEvents();
 	}
 	
-	glfwDestroyWindow(window);
-	glfwTerminate();
+	//glfwDestroyWindow(window);
+	//glfwTerminate();
 	exit(EXIT_SUCCESS);
 }

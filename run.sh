@@ -1,3 +1,3 @@
 #! /bin/sh
 
-cd build; ./firstOpenGL
+cd build; ./puppy

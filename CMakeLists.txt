@@ -2,25 +2,23 @@ cmake_minimum_required(VERSION 3.22.4)
 
 project(puppy)
 
-add_executable(${PROJECT_NAME} firstOpenGL.cc)
+add_executable(${PROJECT_NAME} firstOpenGL.cc external/glad/src/glad.c)
 
 add_subdirectory(
 	external/glfw
-	external/glew
 )
 
 target_include_directories(${PROJECT_NAME} 
 	PUBLIC external/glfw/include
-	PUBLIC external/glew/2.2.0_1/include
+	PUBLIC external/glad/include
 )
 
 target_link_directories(${PROJECT_NAME}
 	PRIVATE external/glfw/src
-	PRIVATE external/glew/2.2.0_1
+	PRIVATE external/glad/src
 )
 
 target_link_libraries(${PROJECT_NAME}
 	glfw
-	
 )
 
