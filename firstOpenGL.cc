@@ -4,51 +4,69 @@
 
 using namespace std;
 
-void init(GLFWwindow* window){};
+void init(GLFWwindow* window){}
 
 void display(GLFWwindow* window, double currentTime)
 {
+	//sets the color of the background when we clear the screen
+	glClearColor(1.0, 0.0, 0.0, 1.0);
 	
+	//clears the screen
+	glClear(GL_COLOR_BUFFER_BIT);
+}
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
 
 int main(void)
 {
-	if(!glfwInit()){exit(EXIT_FAILURE);}
-
+	//initialize glfw windowing tool
+	if(!glfwInit())
+	{
+		std::cout << "glfw failed to initialize \n";
+		exit(EXIT_FAILURE);
+	}
+	
+	//configure window context
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-
-
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Lab3", NULL, NULL);
-	if (window == NULL)
+	
+	//create glfw window
+	GLFWwindow* window = glfwCreateWindow(600, 600, "Rami's Window", NULL, NULL);
+	if(window == NULL)
 	{
-    	cout << "Failed to create GLFW window" << endl;
-    	glfwTerminate();
-    	return -1;
+		std::cout << "window failed to create \n";
+		exit(EXIT_FAILURE);
 	}
-
-	glfwMakeContextCurrent( window );
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-    	std::cout << "Failed to initialize GLAD" << std::endl;
-    	return -1;
-	}
-
+	
+	//create context from window
+	glfwMakeContextCurrent(window);
+	
+	//resizes openGL view port on any window resize
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	
+	//allows for syncronization
 	glfwSwapInterval(1);
 	
-	init(window);
-	
-	//animation loop
-	while(!glfwWindowShouldClose(window))
+	//initialize glad
+	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-	//	display(window, glfwGetTime());
-	//	glfwSwapBuffers(window);
-	//	glfwPollEvents();
+		std::cout << "Failed to load Glad \n";
+		exit(EXIT_FAILURE);
 	}
 	
-	//glfwDestroyWindow(window);
-	//glfwTerminate();
+	//display loop
+	while(!glfwWindowShouldClose(window))
+	{
+		display(window, glfwGetTime());
+		glfwSwapBuffers(window);
+		glfwPollEvents();	
+	}
+	
+	glfwDestroyWindow(window);
+	glfwTerminate();
 	exit(EXIT_SUCCESS);
+	
 }
