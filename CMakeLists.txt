@@ -4,19 +4,23 @@ project(puppy)
 
 add_executable(${PROJECT_NAME} firstOpenGL.cc)
 
-add_subdirectory(external/glfw)
+add_subdirectory(
+	external/glfw
+	external/glew
+)
 
 target_include_directories(${PROJECT_NAME} 
 	PUBLIC external/glfw/include
+	PUBLIC external/glew/2.2.0_1/include
 )
 
 target_link_directories(${PROJECT_NAME}
 	PRIVATE external/glfw/src
+	PRIVATE external/glew/2.2.0_1
 )
 
 target_link_libraries(${PROJECT_NAME}
 	glfw
+	
 )
 
-find_package(GLEW 2.0 REQUIRED)
-target_link_libraries(Starting GLEW::GLEW)
