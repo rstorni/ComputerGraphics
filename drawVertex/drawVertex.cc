@@ -5,9 +5,15 @@
 using namespace std;
 
 float verticies[] = {
+	0.5f, 0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f,
 	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.9f, 0.0f
+	-0.5f, 0.5f, 0.0f
+};
+
+unsigned int indicies[] = {
+	0, 1, 3,
+	1, 2, 3
 };
 
 bool didShaderCompile(unsigned int shader)
@@ -25,25 +31,6 @@ bool didShaderCompile(unsigned int shader)
 unsigned int createShaderProgram()
 {
 	/*
-		creates the verext array object aand then binds it
-		After creating this any VBO and vertexAttribPointer will
-		be bound to the VAO.
-	*/
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	//create a vertex buffer object to store vertex data
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	
-	//binds the buffer to the GL_ARRAY_BUFFER type
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	
-	//adds vertex data to the VBO buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
-
-	/*
 		creates Vertex and Fragmentation Shader
 		the strings are GLSL the actual shader code	
 	*/
@@ -60,7 +47,7 @@ unsigned int createShaderProgram()
 		"out vec4 FragColor;\n"
 		"void main(void)\n"
 		"{\n"
-		"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		"	FragColor = vec4(4.0f, 1.0f, 0.2f, 1.0f);\n"
 		"}\0";
 	
 	//creates the vertex shader object
@@ -100,20 +87,9 @@ unsigned int createShaderProgram()
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 	
-	//sets up the program to use shaderProgram for rendering
-	glUseProgram(shaderProgram);
-
-	//Linking vertex atributes to the VBO
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-	glEnableVertexAttribArray(0);
-
-	//sets up the program to use shaderProgram for rendering
-	glUseProgram(shaderProgram);
-	
-	glBindVertexArray(VAO);
-
-	glDrawArrays(GL_TRIANGLES, 0, 3);	
-	
+	//Delete the fragment and vertex shaders
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);	
 	return shaderProgram;		
 }
 
@@ -142,12 +118,33 @@ void init(GLFWwindow* window)
 		Because we use a VAO this step also links the glVertexAttribPointer to the VBO 
 		and all of that is stored in the VAO.	
 	*/
-	glVertexAttribPointer(			
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	/*
+		create a Element Buffer Object that will allow us to tell the GPU to
+		repeatedly draw specified vertexes.
+
+		This is helpfull as it lets us draw more complex shapes with out having to 
+		repeat vertex declarations.
+	*/			
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	//bind the created buffer to the GL_ELEMENT_ARRAY_BUFFER type;	
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	
+	//Input data into the GL_ELEMENT_ARRAY_BUFFER
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
+		
+
+	unsigned int shader = createShaderProgram();
+	glUseProgram(shader);
 }
 
 void display(GLFWwindow* window, double currentTime)
 {
-	
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -188,17 +185,18 @@ int main(void)
 		std::cout << "glad failed to initialize \n";
 		exit(EXIT_FAILURE);	
 	}
-	
+
+	init(window);			
+			
 	//The rendering loop	
 	while(!glfwWindowShouldClose(window))
 	{
-		createShaderProgram();
+		display(window, glfwGetTime());
 		glfwSwapBuffers(window);
 		
 		//checks to see if anyone wants to close the window
 		glfwPollEvents();
 	}
-	
 	//terminate everything
 	glfwDestroyWindow(window);
 	glfwTerminate();
