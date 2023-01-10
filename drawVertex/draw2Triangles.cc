@@ -1,16 +1,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <cmath>
 
 float verticies[] = {
-// first triangle
-        -0.9f, -0.5f, 0.0f,  // left 
-        -0.0f, -0.5f, 0.0f,  // right
-        -0.45f, 0.5f, 0.0f,  // top 
+// 		Position (x,y,Z) 	Color (R,G,B)
+        -0.9f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left 
+        -0.0f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,  // right
+        -0.45f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top 
         // second triangle
-         0.0f, -0.5f, 0.0f,  // left
-         0.9f, -0.5f, 0.0f,  // right
-         0.45f, 0.5f, 0.0f   // top 
+         0.0f, -0.5f, 0.0f,	0.5f, 0.5f, 0.2f, // left
+         0.9f, -0.5f, 0.0f, 0.6f, 0.0f, 0.5f, // right
+         0.45f, 0.5f, 0.0f, 0.0f, 0.3f, 0.9f  // top 
 };
 	
 bool shaderCompiled(unsigned int shader)
@@ -50,8 +51,11 @@ void initialize()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
 	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 }
 
 unsigned int createShaderProgram()
@@ -59,17 +63,21 @@ unsigned int createShaderProgram()
 	const char* vSource = 
 	"#version 410 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec3 aColor; \n"
+	"out vec3 ourColor;\n"
 	"void main(void)\n"
 	"{\n"
-	"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"	gl_Position = vec4(aPos, 1.0);\n"
+	"	ourColor = aColor;\n"
 	"}\0";
 
 	const char* fSource = 
 	"#version 410 core\n"
+	"in vec3 ourColor;\n"
 	"out vec4 FragColor;\n"
 	"void main(void)\n"
 	"{\n"
-	"	FragColor = vec4(0.3f, 0.6f, 0.9f, 0.7f);\n"
+	"	FragColor = vec4(ourColor, 1.0);\n"
 	"}\0";
 	
 	unsigned int vShader;
@@ -147,6 +155,16 @@ int main()
 	glUseProgram(shader);
 	while(!glfwWindowShouldClose(window))
 	{
+		/*
+			use the time value and a sin function to 
+			modulate the color value from 0 to 1
+			This is done by the sin(T)/2 + .5
+		*/
+		//float timeValue = glfwGetTime();
+	 	//float blueValue = sin(timeValue) / 2.0f + 0.5f;
+		//int vertexColorLocation = glGetUniformLocation(shader, "ourColor");
+		//glUniform4f(vertexColorLocation, 0.5f, blueValue, blueValue, 1.0f);
+
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
