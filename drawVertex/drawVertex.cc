@@ -47,7 +47,7 @@ unsigned int createShaderProgram()
 		"out vec4 FragColor;\n"
 		"void main(void)\n"
 		"{\n"
-		"	FragColor = vec4(4.0f, 1.0f, 0.2f, 1.0f);\n"
+		"	FragColor = vec4(0.0f, 1.0f, 0.2f, 1.0f);\n"
 		"}\0";
 	
 	//creates the vertex shader object
