@@ -3,12 +3,14 @@
 #include <iostream>
 
 float verticies[] = {
-	0.0, 0.0, 0.0,
-	0,5, 0.0, 0.0,
-	0.0, 0.5, 0.0,
-	-0.5, -0.5, 0.0,
-	-0.5, 0.0, 0.0,
-	0.0, -0.5, 0.0
+// first triangle
+        -0.9f, -0.5f, 0.0f,  // left 
+        -0.0f, -0.5f, 0.0f,  // right
+        -0.45f, 0.5f, 0.0f,  // top 
+        // second triangle
+         0.0f, -0.5f, 0.0f,  // left
+         0.9f, -0.5f, 0.0f,  // right
+         0.45f, 0.5f, 0.0f   // top 
 };
 	
 bool shaderCompiled(unsigned int shader)
@@ -145,7 +147,7 @@ int main()
 	glUseProgram(shader);
 	while(!glfwWindowShouldClose(window))
 	{
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
