@@ -5,13 +5,13 @@
 
 float verticies[] = {
 // 		Position (x,y,Z) 	Color (R,G,B)
-        -0.9f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left 
-        -0.0f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,  // right
-        -0.45f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top 
+        -0.4f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, // left 
+        0.4f, -0.4f, 0.0f,	0.0f, 1.0f, 0.0f,  // right
+        0.0f, 0.4f, 0.0f, 0.0f, 0.0f, 1.0f, // top 
         // second triangle
-         0.0f, -0.5f, 0.0f,	0.5f, 0.5f, 0.2f, // left
-         0.9f, -0.5f, 0.0f, 0.6f, 0.0f, 0.5f, // right
-         0.45f, 0.5f, 0.0f, 0.0f, 0.3f, 0.9f  // top 
+        //0.0f, -0.5f, 0.0f,	0.5f, 0.5f, 0.2f, // left
+         //0.9f, -0.5f, 0.0f, 0.6f, 0.0f, 0.5f, // right
+        // 0.45f, 0.5f, 0.0f, 0.0f, 0.3f, 0.9f  // top 
 };
 	
 bool shaderCompiled(unsigned int shader)
@@ -67,7 +67,7 @@ unsigned int createShaderProgram()
 	"out vec3 ourColor;\n"
 	"void main(void)\n"
 	"{\n"
-	"	gl_Position = vec4(aPos, 1.0);\n"
+	"	gl_Position = vec4(-aPos.x, -aPos.y, Pos.z, 1.0);\n"
 	"	ourColor = aColor;\n"
 	"}\0";
 
@@ -86,7 +86,7 @@ unsigned int createShaderProgram()
 	glCompileShader(vShader);
 	if(!shaderCompiled(vShader))
 	{
-		std::cout << "VERTEX SHADER FAILED TO COMPILE" <<std::endl;
+		std::cout << "VERTEX SHADER FAILED TO COMPILE\n" <<std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
@@ -151,7 +151,8 @@ int main()
 	}
 
 	initialize();
-	shader = createShaderProgram();	
+	shader = createShaderProgram();
+		
 	glUseProgram(shader);
 	while(!glfwWindowShouldClose(window))
 	{
@@ -164,8 +165,7 @@ int main()
 	 	//float blueValue = sin(timeValue) / 2.0f + 0.5f;
 		//int vertexColorLocation = glGetUniformLocation(shader, "ourColor");
 		//glUniform4f(vertexColorLocation, 0.5f, blueValue, blueValue, 1.0f);
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
