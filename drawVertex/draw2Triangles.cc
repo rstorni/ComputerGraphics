@@ -4,29 +4,16 @@
 #include <cmath>
 
 float verticies[] = {
-// 		Position (x,y,Z) 	Color (R,G,B)
-        -0.4f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, // left 
-        0.4f, -0.4f, 0.0f,	0.0f, 1.0f, 0.0f,  // right
-        0.0f, 0.4f, 0.0f, 0.0f, 0.0f, 1.0f, // top 
+// 		Position (x,y,Z) 	Color (R,G,B)	Texture(S,T)
+        -0.4f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // left 
+        0.4f, -0.4f, 0.0f,	0.0f, 1.0f, 0.0f, 0.0f, 0.0f, // right
+        0.0f, 0.4f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f // top 
         // second triangle
         //0.0f, -0.5f, 0.0f,	0.5f, 0.5f, 0.2f, // left
          //0.9f, -0.5f, 0.0f, 0.6f, 0.0f, 0.5f, // right
         // 0.45f, 0.5f, 0.0f, 0.0f, 0.3f, 0.9f  // top 
 };
 	
-bool shaderCompiled(unsigned int shader)
-{
-	int success = 0;
-	char infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	
-	if(!success)
-	{
-		return false;
-	}
-	return true;
-}
-
 bool programLinked(unsigned int program)
 {
 	int success = 0;
@@ -56,18 +43,25 @@ void initialize()
 
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 }
 
 unsigned int createShaderProgram()
 {
+	int success = 0;
+	char infoLog[512];
+	
 	const char* vSource = 
 	"#version 410 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
-	"layout (location = 1) in vec3 aColor; \n"
+	"layout (location = 1) in vec3 Color; \n"
 	"out vec3 ourColor;\n"
-	"void main(void)\n"
+	"uniform float offset;\n"
+	"void main()\n"
 	"{\n"
-	"	gl_Position = vec4(-aPos.x, -aPos.y, Pos.z, 1.0);\n"
+	"	gl_Position = vec4(-aPos.x + offset, -aPos.y + offset, aPos.z, 1.0);\n"
 	"	ourColor = aColor;\n"
 	"}\0";
 
@@ -75,7 +69,7 @@ unsigned int createShaderProgram()
 	"#version 410 core\n"
 	"in vec3 ourColor;\n"
 	"out vec4 FragColor;\n"
-	"void main(void)\n"
+	"void main()\n"
 	"{\n"
 	"	FragColor = vec4(ourColor, 1.0);\n"
 	"}\0";
@@ -84,9 +78,11 @@ unsigned int createShaderProgram()
 	vShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vShader, 1, &vSource, NULL);
 	glCompileShader(vShader);
-	if(!shaderCompiled(vShader))
+	glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
+	if(!success)
 	{
-		std::cout << "VERTEX SHADER FAILED TO COMPILE\n" <<std::endl;
+		glGetShaderInfoLog(vShader, 512, NULL, infoLog);
+		std::cout << "VERTEX SHADER FAILED TO COMPILE\n" << infoLog << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
@@ -94,7 +90,7 @@ unsigned int createShaderProgram()
 	fShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fShader, 1, &fSource, NULL);
 	glCompileShader(fShader);
-	if(!shaderCompiled(fShader))
+	if(!success)
 	{
 		std::cout << "FRAGMENT SHADER FAILED TO COMPILE" << std::endl;
 		exit(EXIT_FAILURE);
@@ -149,7 +145,7 @@ int main()
 		std::cout << "FAILED TO INITIALIZE GLAD" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-
+	
 	initialize();
 	shader = createShaderProgram();
 		
@@ -165,6 +161,11 @@ int main()
 	 	//float blueValue = sin(timeValue) / 2.0f + 0.5f;
 		//int vertexColorLocation = glGetUniformLocation(shader, "ourColor");
 		//glUniform4f(vertexColorLocation, 0.5f, blueValue, blueValue, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		float timeValue = glfwGetTime();
+		float offset = sin(timeValue)/2.0f;
+		unsigned int vertexOffsetLocation = glGetUniformLocation(shader, "offset");
+		glUniform1f(vertexOffsetLocation, offset);	
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
 		glfwPollEvents();

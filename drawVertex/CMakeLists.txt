@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22.4)
 
 project(DrawVertex)
 
-add_executable(${PROJECT_NAME} draw2Triangles.cc external/glad/src/glad.c)
+add_executable(${PROJECT_NAME} draw2triangles.cc external/glad/src/glad.c)
 
 add_subdirectory(
 	external/glfw

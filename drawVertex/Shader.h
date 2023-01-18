@@ -1,30 +1,15 @@
-#ifndef SHADER_H
-#define SHADER_H
-
-#include <glad/glad.h>
+#include <GLAD/glad.h>
 #include <string>
-#include <fstream>
 #include <sstream>
+#include <fstream>
 #include <iostream>
 
-class Shader
+class shader
 {
-public:
-	
-	// The ShaderProgram I
-	unsigned int ID;
-	
-	//Constructor reads and builds the shaders
-	Shader(const char* vertexPath, const char* fragmentPath);
-	
-	//Activate the shader
-	void use();
+	public:
+	shader(std::string ShaderPath);
+	~shader();
 
-	//utility uniform functions
-	void setBool(const std::string &name, bool value) const;
-	void setInt(const std::string &name, int value) const;
-	void setFloat(const std::string &name, float value) const;	
-	
+	void shader::use();
+	 
 };
-
-#endif
